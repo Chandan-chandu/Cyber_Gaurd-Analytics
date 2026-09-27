@@ -1,0 +1,20 @@
+# Name your project! Project names should contain only lowercase characters
+# and underscores.
+name: 'cyberguard_dbt'
+version: '1.0.0'
+
+# This setting configures which dbt profile to use.
+profile: 'cyberguard_dbt'
+
+# Project paths
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# Directories removed by `dbt clean`
+clean-targets:
+  - "target"
+  - "dbt_packages"
