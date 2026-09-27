@@ -216,3 +216,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Python virtual environment
+.venv/
+
+# Project data - kept locally
+Data/Raw/
+Data/Bronze/
+
+# Python cache
+__pycache__/
+*.pyc
