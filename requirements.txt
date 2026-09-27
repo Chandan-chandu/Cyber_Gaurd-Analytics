@@ -6,3 +6,5 @@ openpyxl
 pytest
 pyspark==4.2.0
 pandas<3.0
+psycopg2-binary
+sqlalchemy
