@@ -7,8 +7,8 @@ SELECT
     i.resolution,
 
     CASE
-        WHEN LOWER(i.status) = 'resolved' THEN 1
-        ELSE 0
-    END AS is_resolved
+    WHEN UPPER(i.status) = 'CLOSED' THEN 1
+    ELSE 0
+END AS is_resolved
 
 FROM {{ ref('stg_incidents') }} i
