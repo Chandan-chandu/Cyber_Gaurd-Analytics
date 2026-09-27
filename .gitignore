@@ -227,3 +227,6 @@ Data/Bronze/
 # Python cache
 __pycache__/
 *.pyc
+
+# Silver data - generated locally
+Data/Silver/

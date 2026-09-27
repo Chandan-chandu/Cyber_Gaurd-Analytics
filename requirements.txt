@@ -4,3 +4,5 @@ python-dotenv
 jupyter
 openpyxl
 pytest
+pyspark==4.2.0
+pandas<3.0
