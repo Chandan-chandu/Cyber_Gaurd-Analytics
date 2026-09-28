@@ -1,10 +1,10 @@
 from pathlib import Path
 
+import os
 import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
-import os
 
 
 # Project paths
@@ -40,7 +40,7 @@ DATASETS = [
 ]
 
 
-def load_dataset(dataset_name):
+def load_dataset(dataset_name, connection):
 
     print(f"\nLoading: {dataset_name}")
 
@@ -78,10 +78,16 @@ def load_dataset(dataset_name):
             errors="coerce"
         )
 
-    # Load into PostgreSQL
+    # Remove existing data without dropping the table.
+    # This preserves dbt views that depend on the Silver tables.
+    connection.execute(
+        text(f'DELETE FROM silver."{dataset_name}"')
+    )
+
+    # Reload the current Silver dataset
     df.to_sql(
         name=dataset_name,
-        con=engine,
+        con=connection,
         schema="silver",
         if_exists="append",
         index=False,
@@ -100,9 +106,11 @@ if __name__ == "__main__":
 
     print("POSTGRESQL CONNECTION SUCCESSFUL")
 
-    # Load all datasets
-    for dataset in DATASETS:
-        load_dataset(dataset)
+    # Delete and reload all Silver tables in one transaction.
+    with engine.begin() as connection:
+
+        for dataset in DATASETS:
+            load_dataset(dataset, connection)
 
     print("\nSILVER DATA LOADED INTO POSTGRESQL SUCCESSFULLY")
 
