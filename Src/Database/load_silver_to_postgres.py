@@ -83,7 +83,7 @@ def load_dataset(dataset_name):
         name=dataset_name,
         con=engine,
         schema="silver",
-        if_exists="replace",
+        if_exists="append",
         index=False,
     )
 
