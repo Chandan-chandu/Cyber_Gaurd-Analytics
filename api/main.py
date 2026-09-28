@@ -20,6 +20,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
         "http://localhost:5176",
         "http://127.0.0.1:5176",
     ],
@@ -243,6 +245,49 @@ def get_suspicious_event_analysis():
             FROM analytics.mart_suspicious_event_analysis
             ORDER BY date_day, severity, asset_id
         """)
+
+        rows = cursor.fetchall()
+
+        columns = [
+            desc[0]
+            for desc in cursor.description
+        ]
+
+        return [
+            dict(zip(columns, row))
+            for row in rows
+        ]
+
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------
+# LIVE SECURITY EVENTS
+# ---------------------------------------------------------
+
+@app.get("/live-events")
+def get_live_events(limit: int = 20):
+
+    conn = get_connection()
+
+    try:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                event_id,
+                event_type,
+                user_id,
+                asset_id,
+                event_timestamp,
+                severity,
+                source,
+                received_at
+            FROM public.live_security_events
+            ORDER BY received_at DESC
+            LIMIT %s
+        """, (limit,))
 
         rows = cursor.fetchall()
 

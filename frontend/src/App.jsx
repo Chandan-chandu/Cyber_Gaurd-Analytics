@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import LiveEvents from "./LiveEvents";
+import "./App.css";
 
 import {
   ResponsiveContainer,
@@ -14,7 +16,7 @@ import {
 } from "recharts";
 
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://127.0.0.1:8001";
 
 
 // =========================================================
@@ -310,7 +312,7 @@ function App() {
       setApiOnline(false);
 
       setErrorMessage(
-        "Unable to connect to CyberGuard API. Make sure FastAPI is running on port 8000."
+        "Unable to connect to CyberGuard API. Make sure FastAPI is running on port 8001."
       );
 
     }
@@ -1466,6 +1468,12 @@ function App() {
 
 
       </section>
+
+{/* ===================================================
+    LIVE SECURITY EVENTS
+=================================================== */}
+
+<LiveEvents />
 
 
       {/* =================================================

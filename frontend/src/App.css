@@ -838,3 +838,119 @@ footer p {
     font-size: 24px;
   }
 }
+/* ===================================================
+   LIVE SECURITY EVENTS
+=================================================== */
+
+.live-events-section {
+  margin-top: 40px;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+}
+
+.live-events-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.live-events-section h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #0f172a;
+}
+
+.live-events-section p {
+  margin-top: 6px;
+  color: #64748b;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.live-dot {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: livePulse 1.5s infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(1.3);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.live-events-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.live-events-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+.live-events-table th {
+  text-align: left;
+  padding: 14px 16px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.live-events-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.live-events-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.severity-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.severity-badge.low {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.severity-badge.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.severity-badge.high {
+  background: #fee2e2;
+  color: #991b1b;
+}
