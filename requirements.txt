@@ -8,3 +8,5 @@ pyspark==4.2.0
 pandas<3.0
 psycopg2-binary
 sqlalchemy
+fastapi==0.141.1
+uvicorn==0.54.0
