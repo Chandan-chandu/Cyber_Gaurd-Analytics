@@ -230,3 +230,13 @@ __pycache__/
 
 # Silver data - generated locally
 Data/Silver/
+
+# Local project data
+Data/
+
+# Airflow generated configuration and logs
+airflow/config/
+airflow/logs/
+
+# Power BI project files
+*.pbix
