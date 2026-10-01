@@ -240,3 +240,16 @@ airflow/logs/
 
 # Power BI project files
 *.pbix
+
+# ML generated files
+ml/features/*.csv
+ml/models/
+ml/*_backup.py
+
+# Local Kafka/Spark checkpoints
+checkpoints/
+
+# Frontend backup files
+frontend/src/*_backup.*
+frontend/src/App\ \(2\).jsx
+frontend/src/App_modified_sidebar.jsx

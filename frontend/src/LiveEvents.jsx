@@ -36,6 +36,50 @@ function LiveEvents() {
     return () => clearInterval(interval);
   }, []);
 
+  const getEventTypeClass = (eventType) => {
+    return String(eventType || "")
+      .toLowerCase()
+      .replace(/_/g, "-");
+  };
+
+  const getEventTypeLabel = (eventType) => {
+    switch (eventType) {
+      case "authentication_success":
+        return "AUTHENTICATION SUCCESS";
+
+      case "authentication_failed":
+        return "AUTHENTICATION FAILED";
+
+      case "network_activity":
+        return "NETWORK ACTIVITY";
+
+      case "endpoint_alert":
+        return "ENDPOINT ALERT";
+
+      default:
+        return String(eventType || "UNKNOWN EVENT").replace(/_/g, " ");
+    }
+  };
+
+  const getEventIcon = (eventType) => {
+    switch (eventType) {
+      case "authentication_success":
+        return "✓";
+
+      case "authentication_failed":
+        return "✕";
+
+      case "network_activity":
+        return "↔";
+
+      case "endpoint_alert":
+        return "!";
+
+      default:
+        return "•";
+    }
+  };
+
   return (
     <section className="live-events-section">
       <div className="section-header">
@@ -78,36 +122,65 @@ function LiveEvents() {
             </thead>
 
             <tbody>
-              {events.map((event) => (
-                <tr key={`${event.event_id}-${event.received_at}`}>
-                  <td>{event.event_id}</td>
-                  <td>{event.event_type}</td>
-                  <td>{event.user_id}</td>
-                  <td>{event.asset_id}</td>
+              {events.map((event) => {
+                const eventTypeClass = getEventTypeClass(
+                  event.event_type
+                );
 
-                  <td>
-                    <span
-                      className={`severity-badge ${String(
-                        event.severity
-                      ).toLowerCase()}`}
-                    >
-                      {event.severity}
-                    </span>
-                  </td>
+                return (
+                  <tr
+                    key={`${event.event_id}-${event.received_at}`}
+                  >
+                    <td className="event-id-cell">
+                      {event.event_id}
+                    </td>
 
-                  <td>
-                    {new Date(
-                      event.event_timestamp
-                    ).toLocaleTimeString()}
-                  </td>
+                    <td>
+                      <div
+                        className={`event-type-badge ${eventTypeClass}`}
+                      >
+                        <span className="event-type-icon">
+                          {getEventIcon(event.event_type)}
+                        </span>
 
-                  <td>
-                    {new Date(
-                      event.received_at
-                    ).toLocaleTimeString()}
-                  </td>
-                </tr>
-              ))}
+                        <span>
+                          {getEventTypeLabel(event.event_type)}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="user-id-cell">
+                      {event.user_id}
+                    </td>
+
+                    <td className="asset-id-cell">
+                      {event.asset_id}
+                    </td>
+
+                    <td>
+                      <span
+                        className={`severity-badge ${String(
+                          event.severity || ""
+                        ).toLowerCase()}`}
+                      >
+                        {event.severity}
+                      </span>
+                    </td>
+
+                    <td className="event-time-cell">
+                      {new Date(
+                        event.event_timestamp
+                      ).toLocaleTimeString()}
+                    </td>
+
+                    <td className="event-time-cell">
+                      {new Date(
+                        event.received_at
+                      ).toLocaleTimeString()}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

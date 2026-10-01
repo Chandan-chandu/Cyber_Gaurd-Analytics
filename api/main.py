@@ -303,3 +303,50 @@ def get_live_events(limit: int = 20):
 
     finally:
         conn.close()
+
+
+# ---------------------------------------------------------
+# SECURITY ALERTS
+# ---------------------------------------------------------
+
+@app.get("/security-alerts")
+def get_security_alerts(limit: int = 20):
+
+    conn = get_connection()
+
+    try:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                alert_id,
+                event_id,
+                user_id,
+                asset_id,
+                alert_type,
+                severity,
+                reason,
+                rule_triggered,
+                ml_anomaly,
+                ml_anomaly_score,
+                status,
+                created_at
+            FROM public.security_alerts
+            ORDER BY created_at DESC
+            LIMIT %s
+        """, (limit,))
+
+        rows = cursor.fetchall()
+
+        columns = [
+            desc[0]
+            for desc in cursor.description
+        ]
+
+        return [
+            dict(zip(columns, row))
+            for row in rows
+        ]
+
+    finally:
+        conn.close()

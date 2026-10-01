@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import LiveEvents from "./LiveEvents";
+import SecurityAlerts from "./SecurityAlerts";
 import "./App.css";
+import Sidebar from "./Sidebar";
 
 import {
   ResponsiveContainer,
@@ -636,7 +638,13 @@ function App() {
 
   return (
 
-    <div className="app">
+    <div className="cyber-dashboard">
+
+      <Sidebar />
+
+      <main className="cyber-main">
+
+        <div className="app">
 
 
       {/* =================================================
@@ -902,7 +910,7 @@ function App() {
           AUTHENTICATION ACTIVITY
       ================================================= */}
 
-      <section className="chart-section">
+      <section className="chart-section authentication-section analytics-section">
 
         <SectionHeader
           title="Authentication Activity"
@@ -1027,13 +1035,71 @@ function App() {
         </div>
 
       </section>
+      {/* =========================================================
+    SETTINGS
+========================================================= */}
+
+<section className="settings-section">
+
+  <div className="section-header">
+    <div>
+      <h2>Settings</h2>
+      <p>CyberGuard platform configuration</p>
+    </div>
+
+    <div className="section-badge">
+      SYSTEM
+    </div>
+  </div>
+
+  <div className="settings-grid">
+
+    <div className="settings-card">
+      <div className="settings-icon">🗄️</div>
+      <div>
+        <h3>PostgreSQL Warehouse</h3>
+        <p>Analytics warehouse connection</p>
+        <span className="settings-status">CONNECTED</span>
+      </div>
+    </div>
+
+    <div className="settings-card">
+      <div className="settings-icon">⚡</div>
+      <div>
+        <h3>Kafka Streaming</h3>
+        <p>Real-time security event pipeline</p>
+        <span className="settings-status">ACTIVE</span>
+      </div>
+    </div>
+
+    <div className="settings-card">
+      <div className="settings-icon">🔄</div>
+      <div>
+        <h3>PySpark Processing</h3>
+        <p>Streaming and transformation engine</p>
+        <span className="settings-status">READY</span>
+      </div>
+    </div>
+
+    <div className="settings-card">
+      <div className="settings-icon">📊</div>
+      <div>
+        <h3>Analytics Layer</h3>
+        <p>dbt Gold models and analytical marts</p>
+        <span className="settings-status">READY</span>
+      </div>
+    </div>
+
+  </div>
+
+</section>
 
 
       {/* =================================================
           INCIDENT MONITORING
       ================================================= */}
 
-      <section className="chart-section">
+      <section className="chart-section incidents-section">
 
 
         <SectionHeader
@@ -1266,7 +1332,7 @@ function App() {
           ASSET SECURITY ANALYSIS
       ================================================= */}
 
-      <section className="chart-section">
+      <section className="chart-section assets-section">
 
 
         <SectionHeader
@@ -1470,6 +1536,12 @@ function App() {
       </section>
 
 {/* ===================================================
+    SECURITY ALERTS
+=================================================== */}
+
+<SecurityAlerts />
+
+{/* ===================================================
     LIVE SECURITY EVENTS
 =================================================== */}
 
@@ -1630,8 +1702,78 @@ function App() {
       {/* =================================================
           FOOTER
       ================================================= */}
+{/* =========================================================
+    REPORTS
+========================================================= */}
 
+<section className="reports-section">
+
+  <div className="section-header">
+    <div>
+      <h2>Reports</h2>
+      <p>Security analytics and operational reports</p>
+    </div>
+
+    <div className="section-badge">
+      REPORT CENTER
+    </div>
+  </div>
+
+  <div className="reports-grid">
+
+    <div className="report-card">
+      <div className="report-icon">📊</div>
+
+      <div>
+        <h3>Security Overview</h3>
+        <p>
+          Overall authentication, incidents, assets and
+          endpoint security metrics.
+        </p>
+      </div>
+    </div>
+
+    <div className="report-card">
+      <div className="report-icon">🔐</div>
+
+      <div>
+        <h3>Authentication Report</h3>
+        <p>
+          Login attempts, failed authentication activity
+          and authentication trends.
+        </p>
+      </div>
+    </div>
+
+    <div className="report-card">
+      <div className="report-icon">🚨</div>
+
+      <div>
+        <h3>Incident Report</h3>
+        <p>
+          Incident counts, status and resolution
+          analysis.
+        </p>
+      </div>
+    </div>
+
+    <div className="report-card">
+      <div className="report-icon">🖥️</div>
+
+      <div>
+        <h3>Asset Security Report</h3>
+        <p>
+          Asset activity and security risk indicators
+          across the environment.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
       <footer className="footer">
+
 
         <h2>
           CyberGuard Analytics
@@ -2568,6 +2710,10 @@ function App() {
         }
 
       `}</style>
+
+        </div>
+
+      </main>
 
     </div>
 

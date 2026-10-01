@@ -5,27 +5,13 @@ from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import execute_values
 
-
-# ============================================================
-# PROJECT PATHS
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 load_dotenv(PROJECT_ROOT / ".env")
 
-
-# ============================================================
-# HADOOP CONFIGURATION
-# ============================================================
-
 os.environ["HADOOP_HOME"] = r"C:\hadoop"
 os.environ["PATH"] = r"C:\hadoop\bin;" + os.environ["PATH"]
 
-
-# ============================================================
-# PYSPARK IMPORTS
-# ============================================================
 
 from pyspark.sql import SparkSession
 
@@ -39,23 +25,13 @@ from pyspark.sql.functions import (
 from pyspark.sql.types import (
     StructType,
     StructField,
-    IntegerType,
-    StringType
+    StringType,
+    IntegerType
 )
 
 
-# ============================================================
-# POSTGRESQL JDBC DRIVER
-# ============================================================
+POSTGRES_JDBC = "org.postgresql:postgresql:42.7.8"
 
-POSTGRES_JDBC = (
-    "org.postgresql:postgresql:42.7.8"
-)
-
-
-# ============================================================
-# START SPARK
-# ============================================================
 
 spark = (
     SparkSession.builder
@@ -74,24 +50,83 @@ spark = (
 spark.sparkContext.setLogLevel("WARN")
 
 
-# ============================================================
-# KAFKA EVENT STRUCTURE
-# ============================================================
+# ==========================================================
+# KAFKA EVENT SCHEMA
+# ==========================================================
 
 event_schema = StructType([
-    StructField("event_id", StringType(), True),
-    StructField("event_type", StringType(), True),
-    StructField("user_id", IntegerType(), True),
-    StructField("asset_id", IntegerType(), True),
-    StructField("timestamp", StringType(), True),
-    StructField("severity", StringType(), True),
-    StructField("source", StringType(), True)
+
+    StructField(
+        "event_id",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "event_type",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "user_id",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "asset_id",
+        IntegerType(),
+        True
+    ),
+
+    StructField(
+        "timestamp",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "severity",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "source",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "action",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "result",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "ip",
+        StringType(),
+        True
+    ),
+
+    StructField(
+        "location",
+        StringType(),
+        True
+    )
 ])
 
 
-# ============================================================
-# READ EVENTS FROM KAFKA
-# ============================================================
+# ==========================================================
+# READ FROM KAFKA
+# ==========================================================
 
 kafka_df = (
     spark.readStream
@@ -112,9 +147,9 @@ kafka_df = (
 )
 
 
-# ============================================================
-# CONVERT KAFKA VALUE TO JSON STRING
-# ============================================================
+# ==========================================================
+# PARSE JSON
+# ==========================================================
 
 events_df = kafka_df.select(
     col("value")
@@ -122,10 +157,6 @@ events_df = kafka_df.select(
     .alias("json_value")
 )
 
-
-# ============================================================
-# CONVERT JSON INTO COLUMNS
-# ============================================================
 
 parsed_events_df = (
     events_df
@@ -139,17 +170,20 @@ parsed_events_df = (
 )
 
 
-# ============================================================
-# CONVERT TIMESTAMP
-# ============================================================
+# ==========================================================
+# FINAL STREAM DATA
+# ==========================================================
 
 final_df = (
     parsed_events_df
+
     .withColumn(
         "event_timestamp",
         to_timestamp(col("timestamp"))
     )
+
     .drop("timestamp")
+
     .withColumn(
         "received_at",
         current_timestamp()
@@ -157,49 +191,55 @@ final_df = (
 )
 
 
-# ============================================================
+# ==========================================================
 # POSTGRESQL CONNECTION
-# ============================================================
+# ==========================================================
 
 POSTGRES_URL = (
     "jdbc:postgresql://localhost:5432/cyberguard_dw"
 )
 
+
 POSTGRES_PROPERTIES = {
-    "user": os.getenv(
-        "POSTGRES_USER",
-        "postgres"
-    ),
-    "password": os.getenv(
-        "POSTGRES_PASSWORD"
-    ),
-    "driver": "org.postgresql.Driver"
+
+    "user":
+        os.getenv(
+            "POSTGRES_USER",
+            "postgres"
+        ),
+
+    "password":
+        os.getenv(
+            "POSTGRES_PASSWORD"
+        ),
+
+    "driver":
+        "org.postgresql.Driver"
 }
 
 
-# ============================================================
-# WRITE EACH STREAMING BATCH TO POSTGRESQL
-# ============================================================
+# ==========================================================
+# WRITE STREAMING BATCH TO POSTGRESQL
+# ==========================================================
 
-def write_to_postgres(batch_df, batch_id):
+def write_to_postgres(
+    batch_df,
+    batch_id
+):
 
     print(
         f"\nProcessing streaming batch: {batch_id}"
     )
 
-    # --------------------------------------------------------
-    # Remove duplicate event IDs within the current batch
-    # --------------------------------------------------------
 
+    # Prevent duplicate event IDs
     batch_df = batch_df.dropDuplicates(
         ["event_id"]
     )
 
-    # --------------------------------------------------------
-    # Convert Spark DataFrame rows to Python objects
-    # --------------------------------------------------------
 
     rows = batch_df.collect()
+
 
     if not rows:
 
@@ -209,9 +249,6 @@ def write_to_postgres(batch_df, batch_id):
 
         return
 
-    # --------------------------------------------------------
-    # Connect to PostgreSQL
-    # --------------------------------------------------------
 
     connection = psycopg2.connect(
 
@@ -240,35 +277,45 @@ def write_to_postgres(batch_df, batch_id):
         )
     )
 
+
     try:
 
         cursor = connection.cursor()
 
-        # ----------------------------------------------------
-        # Prepare event values
-        # ----------------------------------------------------
 
         values = [
 
             (
+
                 row.event_id,
+
                 row.event_type,
+
                 row.user_id,
+
                 row.asset_id,
+
                 row.event_timestamp,
+
                 row.severity,
+
                 row.source,
-                row.received_at
+
+                row.received_at,
+
+                row.action,
+
+                row.result,
+
+                row.ip,
+
+                row.location
+
             )
 
             for row in rows
         ]
 
-        # ----------------------------------------------------
-        # Insert events
-        #
-        # Duplicate event IDs are ignored.
-        # ----------------------------------------------------
 
         insert_query = """
 
@@ -281,7 +328,11 @@ def write_to_postgres(batch_df, batch_id):
                 event_timestamp,
                 severity,
                 source,
-                received_at
+                received_at,
+                action,
+                result,
+                ip,
+                location
 
             )
 
@@ -292,64 +343,77 @@ def write_to_postgres(batch_df, batch_id):
 
         """
 
+
         execute_values(
+
             cursor,
+
             insert_query,
+
             values
+
         )
 
-        # ----------------------------------------------------
-        # Save transaction
-        # ----------------------------------------------------
 
         connection.commit()
 
+
         print(
+
             f"Batch {batch_id} processed successfully: "
+
             f"{len(values)} events checked"
+
         )
+
 
     except Exception as error:
 
         connection.rollback()
 
         print(
-            f"Error processing batch {batch_id}: "
-            f"{error}"
+            f"Error processing batch {batch_id}: {error}"
         )
 
         raise
 
+
     finally:
 
         cursor.close()
+
         connection.close()
 
 
-# ============================================================
-# START STREAMING
-# ============================================================
+# ==========================================================
+# START STREAM
+# ==========================================================
 
 query = (
+
     final_df
+
     .writeStream
-    .foreachBatch(write_to_postgres)
-    .outputMode("append")
+
+    .foreachBatch(
+        write_to_postgres
+    )
+
+    .outputMode(
+        "append"
+    )
+
     .option(
         "checkpointLocation",
         "Data/StreamingCheckpoint"
     )
+
     .start()
 )
 
 
-# ============================================================
-# STREAMING STATUS
-# ============================================================
-
 print(
-    "PYSPARK KAFKA → POSTGRESQL "
-    "STREAMING STARTED"
+    "\nPYSPARK KAFKA → POSTGRESQL STREAMING STARTED"
 )
 
 print(
@@ -365,9 +429,10 @@ print(
     "Duplicate protection: ENABLED"
 )
 
+print(
+    "Authentication fields: "
+    "action, result, ip, location"
+)
 
-# ============================================================
-# KEEP STREAMING RUNNING
-# ============================================================
 
 query.awaitTermination()
